@@ -1,4 +1,4 @@
-package com.workwise.workwisebackend.support;
+package com.workwise.workwisebackend.support.utils;
 
 public final class Consts {
 

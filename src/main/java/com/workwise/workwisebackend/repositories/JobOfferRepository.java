@@ -1,7 +1,7 @@
 package com.workwise.workwisebackend.repositories;
 
 import com.workwise.workwisebackend.entities.JobOffer;
-import com.workwise.workwisebackend.support.Consts;
+import com.workwise.workwisebackend.support.utils.Consts;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
