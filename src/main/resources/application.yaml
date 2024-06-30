@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: communications-bffe
+
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/workwise
+    username: sichiarelli
+    password: '@Linux110'
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://my-auth-server.com
+
+server:
+  port : 8080
+
+springdoc:
+  api-docs:
+    path: /api-docs
+
+
+swagger-ui:
+  path: /custom/swagger-ui
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: mappings
+
+jwt:
+  token:
+    validity: 18000
+    prefix: Bearer
+  signing:
+    key: YourSignInKey
+  authorities:
+    key: roles
+  header:
+    string: Authorization
+
