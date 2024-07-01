@@ -14,5 +14,6 @@ public final class Consts {
             "   SELECT 1 FROM applications a " +
             "   WHERE jo.id = a.job_offer_id AND a.user_id = :userId" +
             ")";
+
 }
 
