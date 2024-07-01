@@ -15,7 +15,7 @@ public interface NotificationApi {
     @PostMapping("/new-job-offer")
     ResponseEntity<Void> notifyAllCandidatesNewJobOffer(@RequestBody JobOffer jobOffer);
 
-    @GetMapping("/myNotifications")
+    @GetMapping("/myNotification")
     Page<Notification> getAllMyNotifications(Pageable pageable, @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 
 }
