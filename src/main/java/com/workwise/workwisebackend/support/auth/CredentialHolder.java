@@ -1,4 +1,4 @@
-package com.workwise.workwisebackend.entities.actors;
+package com.workwise.workwisebackend.support.auth;
 
 import com.workwise.workwisebackend.entities.Credential;
 import com.workwise.workwisebackend.entities.Role;

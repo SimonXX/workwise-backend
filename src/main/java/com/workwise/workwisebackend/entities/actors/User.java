@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workwise.workwisebackend.entities.Application;
 import com.workwise.workwisebackend.entities.Credential;
 import com.workwise.workwisebackend.entities.Role;
+import com.workwise.workwisebackend.support.auth.CredentialHolder;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @ToString
-public class User implements CredentialHolder{
+public class User implements CredentialHolder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
