@@ -2,7 +2,7 @@ package com.workwise.workwisebackend.services.auth;
 
 import com.workwise.workwisebackend.entities.Credential;
 import com.workwise.workwisebackend.entities.actors.Company;
-import com.workwise.workwisebackend.entities.actors.CredentialHolder;
+import com.workwise.workwisebackend.support.auth.CredentialHolder;
 import com.workwise.workwisebackend.entities.actors.User;
 import com.workwise.workwisebackend.entities.auth.OurUsers;
 import com.workwise.workwisebackend.repositories.CompanyRepository;

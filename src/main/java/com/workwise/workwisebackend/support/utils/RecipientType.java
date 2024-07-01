@@ -2,8 +2,8 @@ package com.workwise.workwisebackend.support.utils;
 
 
 public enum RecipientType {
-    CANDIDATE("candidate"),
-    COMPANY("company");
+    CANDIDATE("CANDIDATE"),
+    COMPANY("COMPANY");
 
     private final String value;
 
