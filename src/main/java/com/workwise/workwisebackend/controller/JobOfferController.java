@@ -4,6 +4,7 @@ import com.workwise.workwisebackend.controller.api.JobOfferApi;
 import com.workwise.workwisebackend.entities.JobOffer;
 import com.workwise.workwisebackend.repositories.modelDTO.JobOfferDTO;
 import com.workwise.workwisebackend.services.JobOfferService;
+import com.workwise.workwisebackend.services.NotificationService;
 import com.workwise.workwisebackend.support.auth.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,9 @@ public class JobOfferController implements JobOfferApi {
 
     @Autowired
     JobOfferService jobOfferService;
+
+    @Autowired
+    NotificationService notificationService;
 
     @Autowired
     private JWTUtils jwtUtils;
@@ -41,6 +45,7 @@ public class JobOfferController implements JobOfferApi {
     public ResponseEntity<JobOffer> addJobOffer(JobOffer jobOffer, String token) {
         String email = jwtUtils.extractJwtToken(token); // Estrai l'email dal JWT
         JobOffer createdJobOffer = jobOfferService.addJobOffer(jobOffer, email);
+        notificationService.notifyAllCandidatesNewJobOffer(jobOffer);
         return ResponseEntity.ok(createdJobOffer);}
 
     @Override

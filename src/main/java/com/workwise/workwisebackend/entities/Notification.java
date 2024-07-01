@@ -1,5 +1,6 @@
 package com.workwise.workwisebackend.entities;
 
+import com.workwise.workwisebackend.support.utils.RecipientType;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -26,8 +27,9 @@ public class Notification {
     @Column(nullable = false)
     private Long recipientId;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String recipientType;
+    private RecipientType recipientType;
 
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
