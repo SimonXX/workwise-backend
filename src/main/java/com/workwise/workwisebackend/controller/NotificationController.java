@@ -37,4 +37,10 @@ public class NotificationController implements NotificationApi {
         return notificationService.getAllMyNotifications(pageable, email);
     }
 
+    @Override
+    public Notification modifyNotification(Long idNotification, String token) {
+        String email = jwtUtils.extractJwtToken(token); // Estrai l'email dal JWT
+        return notificationService.markAsRead(idNotification, email);
+    }
+
 }
