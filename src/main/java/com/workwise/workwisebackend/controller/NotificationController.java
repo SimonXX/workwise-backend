@@ -3,16 +3,17 @@ package com.workwise.workwisebackend.controller;
 import com.workwise.workwisebackend.controller.api.NotificationApi;
 import com.workwise.workwisebackend.entities.JobOffer;
 import com.workwise.workwisebackend.entities.Notification;
-import com.workwise.workwisebackend.services.JobOfferService;
 import com.workwise.workwisebackend.services.NotificationService;
 import com.workwise.workwisebackend.support.auth.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class NotificationController implements NotificationApi {
@@ -37,4 +38,26 @@ public class NotificationController implements NotificationApi {
         return notificationService.getAllMyNotifications(pageable, email);
     }
 
+    @Override
+    public Notification modifyNotification(Long idNotification, String token) {
+        String email = jwtUtils.extractJwtToken(token); // Estrai l'email dal JWT
+        return notificationService.markAsRead(idNotification, email);
+    }
+
+    @Override
+    public Notification notificationUnread(Long idNotification, String token) {
+        String email = jwtUtils.extractJwtToken(token); // Estrai l'email dal JWT
+        return notificationService.markAsUnread(idNotification, email);
+    }
+
+    @Override
+    public Optional<Notification> deleteNotification(Long idNotification, String token) {
+        String email = jwtUtils.extractJwtToken(token); // Estrai l'email dal JWT
+        return notificationService.deleteNotification(idNotification, email);
+    }
+
+    @Override
+    public List<Notification> deleteAllNotifications(String token) {
+        String email = jwtUtils.extractJwtToken(token); // Estrai l'email dal JWT
+        return notificationService.deleteAllNotifications(email);    }
 }

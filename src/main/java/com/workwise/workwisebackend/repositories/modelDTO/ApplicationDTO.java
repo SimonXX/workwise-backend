@@ -14,5 +14,6 @@ public class ApplicationDTO {
     private Long idUser;
     private LocalDateTime applicationDate;
     private String status;
-    private Long jobOffer;
+    private JobOfferSummaryDTO jobOffer;
+
 }

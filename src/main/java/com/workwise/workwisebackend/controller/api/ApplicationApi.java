@@ -2,6 +2,7 @@ package com.workwise.workwisebackend.controller.api;
 
 import com.workwise.workwisebackend.entities.Application;
 import com.workwise.workwisebackend.repositories.modelDTO.ApplicationDTO;
+import com.workwise.workwisebackend.repositories.modelDTO.ApplicationRequestDTO;
 import com.workwise.workwisebackend.support.utils.EntityList;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -25,13 +26,13 @@ public interface ApplicationApi {
 
     @Operation(summary = "Get the applications of the authenticated user", tags = {"Configuration"})
     @SecurityRequirement(name = "JWT")
-    @GetMapping(path = "/myApplication", produces = "application/json")
+    @GetMapping(path = "/myApplications", produces = "application/json")
     Page<ApplicationDTO> getMyApplications(Pageable pageable, @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 
     @Operation(summary = "Add an application for an authenticated user", tags = {"Configuration"})
     @SecurityRequirement(name = "JWT")
     @PostMapping(path = "/addApplication", produces = "application/json")
-    ResponseEntity<ApplicationDTO> addApplication(@Valid @RequestBody ApplicationDTO application, @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
+    ResponseEntity<ApplicationDTO> addApplication(@Valid @RequestBody ApplicationRequestDTO applicationRequestDTO, @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 
     @Operation(summary = "delete an application of an authenticated user", tags = {"Configuration"})
     @SecurityRequirement(name = "JWT")

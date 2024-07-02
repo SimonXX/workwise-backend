@@ -62,7 +62,7 @@ public class ApplicationService {
         return applications.map(applicationMapper::mapToDTO);
     }
 
-    public ApplicationDTO addApplication(ApplicationDTO application, String email) {
+    public ApplicationDTO addApplication(Long jobOffer, String email) {
 
         Credential credentials = credentialsRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Credentials not found for email: " + email));
@@ -70,22 +70,21 @@ public class ApplicationService {
         User user = userRepository.findByCredentials(credentials.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Optional<JobOffer> jobOfferOptional = jobOfferRepository.findById(application.getJobOffer());
+        Optional<JobOffer> jobOfferOptional = jobOfferRepository.findById(jobOffer);
 
         if (jobOfferOptional.isEmpty()) {
-            throw new InvalidConfigurationPropertyValueException("Job offer not found", "application.jobOffer", application.getJobOffer().toString());
+            throw new InvalidConfigurationPropertyValueException("Job offer not found", "application.jobOffer", jobOffer.toString());
         }
 
 
-        JobOffer jobOffer = jobOfferOptional.get();
 
-        Optional<Application> existingApplicationOptional = applicationRepository.findByUserIdAndJobOfferId(user.getId(), jobOffer.getId());
+        Optional<Application> existingApplicationOptional = applicationRepository.findByUserIdAndJobOfferId(user.getId(), jobOffer);
         if (existingApplicationOptional.isPresent()) {
             throw new RuntimeException("Application already exists for this user and job offer");
         }
 
         Application newApp = new Application();
-        newApp.setJobOffer(jobOffer);
+        newApp.setJobOffer(jobOfferOptional.get());
         newApp.setUser(user);
         newApp.setApplicationDate(LocalDateTime.now());
         newApp.setStatus("Pending");
