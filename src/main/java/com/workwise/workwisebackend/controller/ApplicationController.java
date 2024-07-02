@@ -2,6 +2,7 @@ package com.workwise.workwisebackend.controller;
 
 import com.workwise.workwisebackend.controller.api.ApplicationApi;
 import com.workwise.workwisebackend.repositories.modelDTO.ApplicationDTO;
+import com.workwise.workwisebackend.repositories.modelDTO.ApplicationRequestDTO;
 import com.workwise.workwisebackend.services.ApplicationService;
 import com.workwise.workwisebackend.support.auth.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +36,11 @@ public class ApplicationController implements ApplicationApi {
     }
 
     @Override
-    public ResponseEntity<ApplicationDTO> addApplication(ApplicationDTO application, String token){
+    public ResponseEntity<ApplicationDTO> addApplication(ApplicationRequestDTO applicationRequestDTO, String token){
 
         String email = jwtUtils.extractJwtToken(token); // Estrai l'email dal JWT
 
-        ApplicationDTO createdApplication = applicationService.addApplication(application, email);
+        ApplicationDTO createdApplication = applicationService.addApplication(applicationRequestDTO.getJobOffer(), email);
 
         return ResponseEntity.ok(createdApplication);
     }
