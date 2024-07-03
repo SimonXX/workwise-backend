@@ -4,6 +4,8 @@ import com.workwise.workwisebackend.entities.Credential;
 import com.workwise.workwisebackend.entities.actors.User;
 import com.workwise.workwisebackend.repositories.CredentialRepository;
 import com.workwise.workwisebackend.repositories.UserRepository;
+import com.workwise.workwisebackend.repositories.mapper.UserMapper;
+import com.workwise.workwisebackend.repositories.modelDTO.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,10 +42,14 @@ public class UserService {
         return userRepository.findByFirstName(userName);
     }
 
-    public Optional<User> getUserByEmail(String email){
+    public UserDTO getUserByEmail(String email){
         Optional<Credential> credential= credentialRepository.findByEmail(email);
 
-        return userRepository.findByCredentials(credential.get().getId());
+        Long credentialId = credential.get().getId();
+
+        Optional<User> user = userRepository.findByCredentials(credentialId);
+        UserDTO userDTO = UserMapper.mapUserToUserDTO(user.get());
+        return userDTO;
 
     }
 }

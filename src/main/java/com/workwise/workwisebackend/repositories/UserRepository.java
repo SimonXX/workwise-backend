@@ -1,5 +1,6 @@
 package com.workwise.workwisebackend.repositories;
 
+import com.workwise.workwisebackend.entities.Credential;
 import com.workwise.workwisebackend.entities.actors.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,4 +33,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                     @Param("cv") byte[] cv,
                     @Param("role") String role,
                     @Param("credentials") long credentials);
+
+    Optional<User> findByCredentials(Credential credential);
+
 }

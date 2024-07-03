@@ -1,6 +1,7 @@
 package com.workwise.workwisebackend.controller.api;
 
 import com.workwise.workwisebackend.entities.actors.User;
+import com.workwise.workwisebackend.repositories.modelDTO.UserDTO;
 import com.workwise.workwisebackend.support.utils.EntityList;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -43,7 +44,7 @@ public interface UserApi {
     @Operation(summary = "Get users by Email ", tags = {"Configuration"})
     @SecurityRequirement(name = "JWT")
     @GetMapping(path = "/email/", produces = "application/json")
-    Optional<User> getUserByEmail(@RequestParam String userEmail);
+    UserDTO getUserByEmail(@RequestParam String userEmail);
 }
 
 class UserList extends EntityList<User> {}

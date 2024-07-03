@@ -2,6 +2,7 @@ package com.workwise.workwisebackend.controller;
 
 import com.workwise.workwisebackend.controller.api.UserApi;
 import com.workwise.workwisebackend.entities.actors.User;
+import com.workwise.workwisebackend.repositories.modelDTO.UserDTO;
 import com.workwise.workwisebackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +37,7 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public Optional<User> getUserByEmail(String userEmail) {
+    public UserDTO getUserByEmail(String userEmail) {
         return userService.getUserByEmail(userEmail);
     }
 }
