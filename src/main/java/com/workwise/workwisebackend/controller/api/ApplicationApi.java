@@ -2,6 +2,7 @@ package com.workwise.workwisebackend.controller.api;
 
 import com.workwise.workwisebackend.entities.Application;
 import com.workwise.workwisebackend.repositories.modelDTO.ApplicationDTO;
+import com.workwise.workwisebackend.repositories.modelDTO.ApplicationEditDTO;
 import com.workwise.workwisebackend.repositories.modelDTO.ApplicationRequestDTO;
 import com.workwise.workwisebackend.support.utils.EntityList;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,9 +43,7 @@ public interface ApplicationApi {
     @Operation(summary = "Allow a company to modify the status of an application related to the company's job offer", tags = {"Configuration"})
     @SecurityRequirement(name = "JWT")
     @PutMapping("/modifyApplication")
-    ResponseEntity<ApplicationDTO> modifyApplication(@RequestParam Long idApplication,
-                                                     @RequestParam String newStatus,
-                                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
+    ResponseEntity<ApplicationDTO> modifyApplication(@Valid @RequestBody ApplicationEditDTO applicationEditDTO, @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 }
 
 class ApplicationList extends EntityList<Application> {}

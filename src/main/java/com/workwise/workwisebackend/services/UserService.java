@@ -6,6 +6,7 @@ import com.workwise.workwisebackend.repositories.CredentialRepository;
 import com.workwise.workwisebackend.repositories.UserRepository;
 import com.workwise.workwisebackend.repositories.mapper.UserMapper;
 import com.workwise.workwisebackend.repositories.modelDTO.UserDTO;
+import com.workwise.workwisebackend.repositories.modelDTO.UserInformationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -81,6 +82,46 @@ public class UserService {
 
         // Salva l'utente aggiornato nel database
         return UserMapper.mapUserToUserDTO(userRepository.save(existsUser));
+    }
+
+    public UserInformationDTO getUserCV(String email){
+        Credential credentials = credentialRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Optional<User> user = userRepository.findByCredentials(credentials.getId());
+
+        if(user.isPresent()){
+            UserInformationDTO inf = new UserInformationDTO();
+
+            inf.setFirstName(user.get().getFirstName());
+            inf.setLastName(user.get().getLastName());
+            inf.setPhone(user.get().getPhone());
+            inf.setAddress(user.get().getAddress());
+            inf.setCvBase64(user.get().getCv());
+
+            return inf;
+        }
+
+        throw new RuntimeException("User not found");
+    }
+
+    public UserInformationDTO getUserInformationById(Long userId){
+
+
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isPresent()){
+            UserInformationDTO inf = new UserInformationDTO();
+
+            inf.setFirstName(user.get().getFirstName());
+            inf.setLastName(user.get().getLastName());
+            inf.setPhone(user.get().getPhone());
+            inf.setAddress(user.get().getAddress());
+            inf.setCvBase64(user.get().getCv());
+
+            return inf;
+        }
+
+        throw new RuntimeException("User not found");
     }
 }
 

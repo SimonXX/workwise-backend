@@ -3,6 +3,7 @@ package com.workwise.workwisebackend.controller;
 import com.workwise.workwisebackend.controller.api.UserApi;
 import com.workwise.workwisebackend.entities.actors.User;
 import com.workwise.workwisebackend.repositories.modelDTO.UserDTO;
+import com.workwise.workwisebackend.repositories.modelDTO.UserInformationDTO;
 import com.workwise.workwisebackend.services.UserService;
 import com.workwise.workwisebackend.support.auth.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,5 +52,16 @@ public class UserController implements UserApi {
         String email = jwtUtils.extractJwtToken(token);
 
         return userService.updateUser(user, email);
+    }
+
+    @Override
+    public UserInformationDTO getUserInformationByEmail(String userEmail) {
+
+        return userService.getUserCV(userEmail);
+    }
+
+    @Override
+    public UserInformationDTO getUserInformationById(Long userId) {
+        return userService.getUserInformationById(userId);
     }
 }
