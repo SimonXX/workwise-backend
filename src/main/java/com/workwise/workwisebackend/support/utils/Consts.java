@@ -15,5 +15,7 @@ public final class Consts {
             "   WHERE jo.id = a.job_offer_id AND a.user_id = :userId" +
             ")";
 
+    public static final String FIND_APPLICATIONS_FOR_COMPANY = "SELECT a.* FROM applications a JOIN job_offers jo ON a.job_offer_id = jo.id WHERE jo.company_id = :companyId";
+
 }
 

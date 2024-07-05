@@ -9,6 +9,8 @@ import com.workwise.workwisebackend.repositories.modelDTO.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +53,34 @@ public class UserService {
         UserDTO userDTO = UserMapper.mapUserToUserDTO(user.get());
         return userDTO;
 
+    }
+
+    public UserDTO updateUser(UserDTO userDTO, String email) {
+        // Trova le credenziali tramite email
+        Credential credentials = credentialRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Trova l'utente tramite le credenziali
+        User existsUser = userRepository.findByCredentials(credentials.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Verifica che l'email corrisponda
+        if (!credentials.getEmail().equals(email)) {
+            throw new RuntimeException("Access Denied");
+        }
+
+        // Aggiorna solo i campi specificati
+        existsUser.setFirstName(userDTO.getFirstName());
+        existsUser.setLastName(userDTO.getLastName());
+        existsUser.setPhone(userDTO.getPhone());
+        existsUser.setAddress(userDTO.getAddress());
+        existsUser.setDateOfBirth(userDTO.getDateOfBirth());
+        existsUser.setCv(userDTO.getCvBase64());
+
+        System.out.println(Arrays.toString(Base64.getDecoder().decode(userDTO.getCvBase64())));
+
+        // Salva l'utente aggiornato nel database
+        return UserMapper.mapUserToUserDTO(userRepository.save(existsUser));
     }
 }
 

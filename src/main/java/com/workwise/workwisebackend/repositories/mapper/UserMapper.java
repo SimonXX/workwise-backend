@@ -3,6 +3,7 @@ package com.workwise.workwisebackend.repositories.mapper;
 import com.workwise.workwisebackend.entities.actors.User;
 import com.workwise.workwisebackend.repositories.modelDTO.UserDTO;
 
+
 public class UserMapper {
 
     public static UserDTO mapUserToUserDTO(User user) {
@@ -12,7 +13,7 @@ public class UserMapper {
         userDTO.setPhone(user.getPhone());
         userDTO.setAddress(user.getAddress());
         userDTO.setDateOfBirth(user.getDateOfBirth());
-        userDTO.setCv(user.getCv());
+        userDTO.setCvBase64(user.getCv());
         userDTO.setCreatedDate(user.getCreatedDate());
         userDTO.setRole(user.getRole());
         return userDTO;

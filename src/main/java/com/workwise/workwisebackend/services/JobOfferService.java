@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class JobOfferService {
@@ -54,20 +55,45 @@ public class JobOfferService {
     public Page<JobOfferDTO> getAllAvailablesJobOffers(Pageable pageable, String email){
         Credential credentials = credentialsRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Credentials not found for email: " + email));
-        User user = userRepository.findByCredentials(credentials.getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Page<JobOffer> jobOffers = jobOfferRepository.findAvailablesJobOffers(pageable, user.getId());
 
-        return jobOffers.map(jobOffer -> {
-            List<ApplicationDTO> applicationDTOs = jobOffer.getApplications().stream()
-                    .map(applicationMapper::mapToDTO)
-                    .toList();
+        // Prova a trovare l'utente
+        Optional<User> optionalUser = userRepository.findByCredentials(credentials.getId());
 
-            return jobOfferMapper.mapToDTO(jobOffer);
-        });
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            Page<JobOffer> jobOffers = jobOfferRepository.findAvailablesJobOffers(pageable, user.getId());
+
+            return jobOffers.map(jobOffer -> {
+                List<ApplicationDTO> applicationDTOs = jobOffer.getApplications().stream()
+                        .map(applicationMapper::mapToDTO)
+                        .toList();
+
+                return jobOfferMapper.mapToDTO(jobOffer);
+            });
+        } else {
+            // Prova a trovare la compagnia se l'utente non è presente
+            Optional<Company> optionalCompany = companyRepository.findByCredentials(credentials.getId());
+
+            if (optionalCompany.isPresent()) {
+                Company company = optionalCompany.get();
+                Page<JobOffer> jobOffers = jobOfferRepository.findByCompanyId(company.getId(), pageable);
+
+                return jobOffers.map(jobOffer -> {
+                    List<ApplicationDTO> applicationDTOs = jobOffer.getApplications().stream()
+                            .map(applicationMapper::mapToDTO)
+                            .toList();
+
+                    return jobOfferMapper.mapToDTO(jobOffer);
+                });
+            } else {
+                throw new RuntimeException("No user or company found for the provided credentials");
+            }
+        }
     }
 
+
+    //usato sia da user che da company
     public Page<JobOfferDTO> getMyJobOffers(Pageable pageable, String email){
         Credential credentials = credentialsRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -86,8 +112,10 @@ public class JobOfferService {
         Company company = companyRepository.findByCredentials(credentials.getId())
                 .orElseThrow(() -> new RuntimeException("Company not found"));
 
+
         jobOffer.setCompany(company);
         jobOffer.setPosteddate(LocalDateTime.now());
+        jobOffer.setExpirydate(jobOffer.getExpirydate());
 
         return jobOfferRepository.save(jobOffer);
     }

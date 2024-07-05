@@ -17,7 +17,7 @@ public class UserDTO {
     private String phone;
     private String address;
     private LocalDate dateOfBirth;
+    private String cvBase64;  // Campo per il CV codificato in Base64
     private LocalDate createdDate;
-    private byte[] cv;
     private Role role;
 }

@@ -8,9 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,5 +26,11 @@ public interface CompanyApi {
     @SecurityRequirement(name = "JWT")
     @GetMapping(path = "/email", produces = "application/json")
     Optional<Company> getCompanyByEmail(@RequestParam String companyEmail);
+
+    @Operation(summary = "Update a company's details", tags = {"Configuration"})
+    @SecurityRequirement(name = "JWT")
+    @PutMapping(path = "/change", consumes = "application/json", produces = "application/json")
+    Company updateCompany(@RequestBody Company company, @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
+
 }
 class CompaniesList extends EntityList<Company> {}
