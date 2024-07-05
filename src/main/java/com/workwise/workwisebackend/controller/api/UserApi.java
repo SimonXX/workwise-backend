@@ -2,12 +2,9 @@ package com.workwise.workwisebackend.controller.api;
 
 import com.workwise.workwisebackend.entities.actors.User;
 import com.workwise.workwisebackend.repositories.modelDTO.UserDTO;
+import com.workwise.workwisebackend.repositories.modelDTO.UserInformationDTO;
 import com.workwise.workwisebackend.support.utils.EntityList;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
@@ -31,12 +28,12 @@ public interface UserApi {
 
     @Operation(summary = "Get users by last name ", tags = {"Configuration"})
     @SecurityRequirement(name = "JWT")
-    @GetMapping(path = "/{userLastName}", produces = "application/json")
+    @GetMapping(path = "/lastName/{userLastName}", produces = "application/json")
     List<User> getUserByLastName(String userLastName);
 
     @Operation(summary = "Get users by Name ", tags = {"Configuration"})
     @SecurityRequirement(name = "JWT")
-    @GetMapping(path = "/{userName}", produces = "application/json")
+    @GetMapping(path = "/firstName/{userName}", produces = "application/json")
     List<User> getUserByName(String userName);
 
     @Operation(summary = "Get users by Email ", tags = {"Configuration"})
@@ -49,6 +46,15 @@ public interface UserApi {
     @SecurityRequirement(name = "JWT")
     @PutMapping(path = "/change", consumes = "application/json", produces = "application/json")
     UserDTO updateUser(@RequestBody UserDTO user, @RequestHeader(HttpHeaders.AUTHORIZATION) String token);
+
+    @Operation(summary = "Get User CV by user's email", tags = {"Configuration"})
+    @GetMapping(path = "/information",   produces = "application/json")
+    UserInformationDTO getUserInformationByEmail(@RequestParam String userEmail);
+
+    @Operation(summary = "Get User CV by user's email", tags = {"Configuration"})
+    @GetMapping(path = "/information/id",   produces = "application/json")
+    UserInformationDTO getUserInformationById (@RequestParam Long userId);
+
 }
 
 class UserList extends EntityList<User> {}

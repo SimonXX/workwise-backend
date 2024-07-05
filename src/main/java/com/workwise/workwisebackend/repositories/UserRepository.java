@@ -37,4 +37,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByCredentials(Credential credential);
 
+    @Query(value = "SELECT cv FROM USERS WHERE credentials_id = :credentials_id", nativeQuery = true)
+    String getCVByEmail(@Param("credentials_id") Long credentialsId);
 }
