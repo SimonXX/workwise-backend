@@ -109,14 +109,20 @@ public class UserService {
 
 
         Optional<User> user = userRepository.findById(userId);
+
         if(user.isPresent()){
             UserInformationDTO inf = new UserInformationDTO();
+
+            Credential credentials = credentialRepository.findById(user.get().getCredentials().getId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
 
             inf.setFirstName(user.get().getFirstName());
             inf.setLastName(user.get().getLastName());
             inf.setPhone(user.get().getPhone());
             inf.setAddress(user.get().getAddress());
             inf.setCvBase64(user.get().getCv());
+            inf.setEmail(credentials.getEmail());
 
             return inf;
         }
