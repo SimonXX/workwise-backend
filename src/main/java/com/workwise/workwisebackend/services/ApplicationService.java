@@ -3,12 +3,14 @@ package com.workwise.workwisebackend.services;
 import com.workwise.workwisebackend.entities.Application;
 import com.workwise.workwisebackend.entities.Credential;
 import com.workwise.workwisebackend.entities.JobOffer;
+import com.workwise.workwisebackend.entities.Notification;
 import com.workwise.workwisebackend.entities.actors.Company;
 import com.workwise.workwisebackend.entities.actors.User;
 import com.workwise.workwisebackend.repositories.*;
 import com.workwise.workwisebackend.repositories.mapper.ApplicationMapper;
 import com.workwise.workwisebackend.repositories.modelDTO.ApplicationDTO;
 import com.workwise.workwisebackend.repositories.modelDTO.ApplicationEditDTO;
+import com.workwise.workwisebackend.support.utils.RecipientType;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
@@ -41,6 +43,9 @@ public class ApplicationService {
 
     @Autowired
     private CompanyRepository companyRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     public List<ApplicationDTO> getAllApplications() {
 
@@ -86,6 +91,15 @@ public class ApplicationService {
 
         Optional<JobOffer> jobOfferOptional = jobOfferRepository.findById(jobOffer);
 
+        Optional<Company> company = companyRepository.findById(jobOfferOptional.get().getCompany().getId());
+        Notification notification = new Notification();
+        notification.setType("New Application");
+        notification.setMessage("Hi " + company.get().getName()+ ". A new application has been made to your job offer with title:  " + jobOfferOptional.get().getTitle() + ", from User: " + credentials.getEmail());
+        notification.setRecipientId(company.get().getId());
+        notification.setRecipientType(RecipientType.COMPANY);
+        notificationRepository.save(notification);
+
+
         if (jobOfferOptional.isEmpty()) {
             throw new InvalidConfigurationPropertyValueException("Job offer not found", "application.jobOffer", jobOffer.toString());
         }
@@ -127,6 +141,15 @@ public class ApplicationService {
 
         applicationRepository.deleteById(application.getId());
 
+        Optional<JobOffer> jobOfferOptional = jobOfferRepository.findById(application.getJobOffer().getId());
+        Optional<Company> company = companyRepository.findById(jobOfferOptional.get().getCompany().getId());
+        Notification notification = new Notification();
+        notification.setType("Delete Application");
+        notification.setMessage("Hi " + company.get().getName()+ ". The application for the offer with title " + jobOfferOptional.get().getTitle() + " has been deleted by the user " +  credentials.getEmail());
+        notification.setRecipientId(company.get().getId());
+        notification.setRecipientType(RecipientType.COMPANY);
+        notificationRepository.save(notification);
+
         return applicationMapper.mapToDTO(application);
 
     }
@@ -158,6 +181,19 @@ public class ApplicationService {
             default:
                 throw new RuntimeException("Invalid status: " + newStatus);
         }
+
+
+
+        Optional<Company> company = companyRepository.findById(jobOffer.get().getCompany().getId());
+        Optional<User> user = userRepository.findById(application.getUser().getId());
+
+        Notification notification = new Notification();
+        notification.setType("Updating from your application");
+        notification.setMessage("Hi " + user.get().getFirstName()+ ". The status of you application has been changed by " + company.get().getName());
+        notification.setRecipientId(user.get().getId());
+        notification.setRecipientType(RecipientType.CANDIDATE);
+        notificationRepository.save(notification);
+
 
         applicationRepository.save(application);
 

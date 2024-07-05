@@ -38,7 +38,7 @@ public class NotificationService {
         for (User candidate : candidates) {
             Notification notification = new Notification();
             notification.setType("New JobOffer");
-            notification.setMessage("Hi " + candidate.getFirstName() + ". A new job offer is available! Expand for more information ...");
+            notification.setMessage("Hi " + candidate.getFirstName() + ". A new job offer is available: " + jobOffer.getTitle() + ": " + jobOffer.getDescription());
             notification.setRecipientId(candidate.getId());
             notification.setRecipientType(RecipientType.CANDIDATE);
             notificationRepository.save(notification);
