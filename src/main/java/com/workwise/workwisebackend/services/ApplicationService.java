@@ -3,11 +3,9 @@ package com.workwise.workwisebackend.services;
 import com.workwise.workwisebackend.entities.Application;
 import com.workwise.workwisebackend.entities.Credential;
 import com.workwise.workwisebackend.entities.JobOffer;
+import com.workwise.workwisebackend.entities.actors.Company;
 import com.workwise.workwisebackend.entities.actors.User;
-import com.workwise.workwisebackend.repositories.ApplicationRepository;
-import com.workwise.workwisebackend.repositories.CredentialRepository;
-import com.workwise.workwisebackend.repositories.JobOfferRepository;
-import com.workwise.workwisebackend.repositories.UserRepository;
+import com.workwise.workwisebackend.repositories.*;
 import com.workwise.workwisebackend.repositories.mapper.ApplicationMapper;
 import com.workwise.workwisebackend.repositories.modelDTO.ApplicationDTO;
 import jakarta.transaction.Transactional;
@@ -40,6 +38,9 @@ public class ApplicationService {
     @Autowired
     private ApplicationMapper applicationMapper;
 
+    @Autowired
+    private CompanyRepository companyRepository;
+
     public List<ApplicationDTO> getAllApplications() {
 
         List<Application> applications = applicationRepository.findAll();
@@ -54,13 +55,25 @@ public class ApplicationService {
         Credential credentials = credentialsRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Credentials not found for email: " + email));
 
-        User user = userRepository.findByCredentials(credentials.getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        Optional<User> optionalUser = userRepository.findByCredentials(credentials.getId());
 
-        Page<Application> applications = applicationRepository.findByUserId(pageable, user.getId());
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            Page<Application> applications = applicationRepository.findByUserId(pageable, user.getId());
+            return applications.map(applicationMapper::mapToDTO);
+        } else {
+            Optional<Company> optionalCompany = companyRepository.findByCredentials(credentials.getId());
 
-        return applications.map(applicationMapper::mapToDTO);
-    }
+            if (optionalCompany.isPresent()) {
+                Company company = optionalCompany.get();
+                Page<Application> applications = applicationRepository.findApplicationsByCompanyId(pageable, company.getId());
+
+                return applications.map(applicationMapper::mapToDTO);
+            }
+        }
+        throw new RuntimeException("No user or company found for the provided credentials");
+     }
+
 
     public ApplicationDTO addApplication(Long jobOffer, String email) {
 

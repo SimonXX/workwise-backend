@@ -23,6 +23,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Optional;
@@ -69,6 +71,7 @@ public class AuthService {
         user.setLastName(userDto.getLastName());
         user.setCredentials(credential);
         user.setRole(roleRepository.findRoleByName("CANDIDATE"));
+        user.setCreatedDate(LocalDate.now());
 
         if (userDto.getPhone() != null) {
             user.setPhone(userDto.getPhone());
@@ -80,12 +83,13 @@ public class AuthService {
             user.setDateOfBirth(userDto.getDateOfBirth());
         }
         if (userDto.getCv() != null) {
-            byte[] bytes = Base64.getDecoder().decode(userDto.getCv());
-            user.setCv(bytes);
+            user.setCv(userDto.getCv());
+        }else{
+            user.setCv("");
         }
 
         userRepository.createUser(user.getFirstName(), user.getLastName(), user.getPhone(),
-                user.getAddress(), user.getDateOfBirth(), user.getCv(), user.getRole().getName(), user.getCredentials().getId());
+                user.getAddress(), user.getDateOfBirth(), user.getCv(), user.getCreatedDate(), user.getRole().getName(), user.getCredentials().getId());
 
         return new ReqRes(200, "User registered successfully", null, null);
     }
@@ -104,10 +108,14 @@ public class AuthService {
         credentialRepository.save(credential);
 
         Company company = new Company();
+        company.setName(companyDto.getName());
         company.setPhone(companyDto.getPhone());
         company.setAddress(companyDto.getAddress());
+        company.setWebsite(companyDto.getWebsite());
         company.setCredentials(credential);
         company.setRole(roleRepository.findRoleByName("COMPANY"));
+        company.setDescription(companyDto.getDescription());
+
 
         companyRepository.createCompany(
                 company.getName(),
@@ -125,6 +133,7 @@ public class AuthService {
 
     public ReqRes login(LoginDto loginDto) throws Exception {
 
+        System.out.println("mail:" + loginDto.getEmail());
         ReqRes response = new ReqRes();
         response.setStatus(200);
         response.setExpirationTime("24Hr");

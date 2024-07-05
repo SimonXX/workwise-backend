@@ -3,7 +3,9 @@ package com.workwise.workwisebackend.services;
 import com.workwise.workwisebackend.entities.Credential;
 import com.workwise.workwisebackend.entities.JobOffer;
 import com.workwise.workwisebackend.entities.Notification;
+import com.workwise.workwisebackend.entities.actors.Company;
 import com.workwise.workwisebackend.entities.actors.User;
+import com.workwise.workwisebackend.repositories.CompanyRepository;
 import com.workwise.workwisebackend.repositories.CredentialRepository;
 import com.workwise.workwisebackend.repositories.NotificationRepository;
 import com.workwise.workwisebackend.repositories.UserRepository;
@@ -27,6 +29,9 @@ public class NotificationService {
     @Autowired
     private CredentialRepository credentialsRepository;
 
+    @Autowired
+    private CompanyRepository companyRepository;
+
     public void notifyAllCandidatesNewJobOffer(JobOffer jobOffer) {
         List<User> candidates = userRepository.findAll();
 
@@ -44,12 +49,23 @@ public class NotificationService {
         Credential credentials = credentialsRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        User user = userRepository.findByCredentials(credentials.getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        Optional<User> optionalUser = userRepository.findByCredentials(credentials.getId());
 
-        System.out.println(user.getId() + ", " + RecipientType.CANDIDATE);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
 
-        return notificationRepository.findByRecipientIdAndRecipientTypeOrderByCreatedAtDesc(pageable, user.getId(), RecipientType.CANDIDATE);
+            System.out.println(user.getId() + ", " + RecipientType.CANDIDATE);
+            return notificationRepository.findByRecipientIdAndRecipientTypeOrderByCreatedAtDesc(pageable, user.getId(), RecipientType.CANDIDATE);
+        }
+        Optional<Company> optionalCompany = companyRepository.findByCredentials(credentials.getId());
+
+        if (optionalCompany.isPresent()) {
+            Company company = optionalCompany.get();
+            return notificationRepository.findByRecipientIdAndRecipientTypeOrderByCreatedAtDesc(pageable, company.getId(), RecipientType.COMPANY);
+
+        }
+
+        throw new RuntimeException("No user or company found for the provided credentials");
     }
 
     public Notification markAsRead(Long notificationId, String email) {

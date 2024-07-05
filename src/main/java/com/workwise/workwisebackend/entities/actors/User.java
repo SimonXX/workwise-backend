@@ -34,9 +34,8 @@ public class User implements CredentialHolder {
     private String address;
     private LocalDate dateOfBirth;
 
-    @Lob
-    @Column(name="cv", columnDefinition="BLOB")
-    private byte[] cv;
+    @Column(name="cv", columnDefinition = "TEXT")
+    private  String cv;
     private LocalDate createdDate;
 
 //    @ManyToMany(cascade = CascadeType.ALL)

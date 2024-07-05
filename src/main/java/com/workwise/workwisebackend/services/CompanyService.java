@@ -28,4 +28,29 @@ public class CompanyService {
 
         return companyRepository.findByCredentials(credential.get().getId());
     }
+
+    public Company updateCompany(Company company, String email) {
+        // Trova le credenziali tramite email
+        Credential credentials = credentialRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+
+        // Trova la company tramite le credenziali
+        Company existsCompany = companyRepository.findByCredentials(credentials.getId())
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+
+        // Verifica che l'email corrisponda
+        if (!credentials.getEmail().equals(email)) {
+            throw new RuntimeException("Access Denied");
+        }
+
+        // Aggiorna solo i campi specificati
+        existsCompany.setName(company.getName());
+        existsCompany.setDescription(company.getDescription());
+        existsCompany.setPhone(company.getPhone());
+        existsCompany.setAddress(company.getAddress());
+        existsCompany.setWebsite(company.getWebsite());
+
+        // Salva la company aggiornata nel database
+        return companyRepository.save(existsCompany);
+    }
 }

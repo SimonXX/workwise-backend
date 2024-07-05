@@ -1,5 +1,6 @@
 package com.workwise.workwisebackend.repositories;
 
+import com.workwise.workwisebackend.entities.Credential;
 import com.workwise.workwisebackend.entities.actors.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,13 +24,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO users (first_name, last_name, phone, address, date_of_birth, cv, role_user, credentials_id) VALUES (:firstName, :lastName, :phone, :address, :dateOfBirth, :cv, :role, :credentials)", nativeQuery = true)
+    @Query(value = "INSERT INTO users (first_name, last_name, phone, address, date_of_birth, cv, created_date, role_user, credentials_id) VALUES (:firstName, :lastName, :phone, :address, :dateOfBirth, :cv, :created_date, :role, :credentials)", nativeQuery = true)
     void createUser(@Param("firstName") String firstName,
                     @Param("lastName") String lastName,
                     @Param("phone") String phone,
                     @Param("address") String address,
                     @Param("dateOfBirth") LocalDate dateOfBirth,
-                    @Param("cv") byte[] cv,
+                    @Param("cv") String cv,
+                    @Param("created_date") LocalDate createdDate,
                     @Param("role") String role,
                     @Param("credentials") long credentials);
+
+    Optional<User> findByCredentials(Credential credential);
+
 }
