@@ -2,6 +2,7 @@ package com.workwise.workwisebackend.controller;
 
 import com.workwise.workwisebackend.controller.api.ApplicationApi;
 import com.workwise.workwisebackend.repositories.modelDTO.ApplicationDTO;
+import com.workwise.workwisebackend.repositories.modelDTO.ApplicationEditDTO;
 import com.workwise.workwisebackend.repositories.modelDTO.ApplicationRequestDTO;
 import com.workwise.workwisebackend.services.ApplicationService;
 import com.workwise.workwisebackend.support.auth.JWTUtils;
@@ -56,11 +57,11 @@ public class ApplicationController implements ApplicationApi {
     }
 
     @Override
-    public ResponseEntity<ApplicationDTO> modifyApplication(Long idApplication, String newStatus, String token) {
+    public ResponseEntity<ApplicationDTO> modifyApplication(ApplicationEditDTO applicationEditDTO, String token) {
 
         String email = jwtUtils.extractJwtToken(token); // Estrai l'email dal JWT
 
-        ApplicationDTO modifiedApp = applicationService.modifyApplication(idApplication, newStatus, email);
+        ApplicationDTO modifiedApp = applicationService.modifyApplication(applicationEditDTO, email);
 
         return ResponseEntity.ok(modifiedApp); // Ritorna l'applicazione modificata
 

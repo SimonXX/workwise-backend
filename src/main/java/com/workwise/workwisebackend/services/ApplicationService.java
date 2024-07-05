@@ -8,6 +8,7 @@ import com.workwise.workwisebackend.entities.actors.User;
 import com.workwise.workwisebackend.repositories.*;
 import com.workwise.workwisebackend.repositories.mapper.ApplicationMapper;
 import com.workwise.workwisebackend.repositories.modelDTO.ApplicationDTO;
+import com.workwise.workwisebackend.repositories.modelDTO.ApplicationEditDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
@@ -131,7 +132,10 @@ public class ApplicationService {
     }
 
     @Transactional
-    public ApplicationDTO modifyApplication(Long idApplication, String newStatus, String email) {
+    public ApplicationDTO modifyApplication(ApplicationEditDTO applicationEditDTO,  String email) {
+
+        Long idApplication = applicationEditDTO.getIdApplication();
+        String newStatus = applicationEditDTO.getNewStatus();
 
         Application application = applicationRepository.findById(idApplication)
                 .orElseThrow(() -> new RuntimeException("Application not found"));

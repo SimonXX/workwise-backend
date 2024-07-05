@@ -113,6 +113,7 @@ public class AuthService {
         company.setAddress(companyDto.getAddress());
         company.setWebsite(companyDto.getWebsite());
         company.setCredentials(credential);
+        company.setCreateddate(LocalDateTime.now());
         company.setRole(roleRepository.findRoleByName("COMPANY"));
         company.setDescription(companyDto.getDescription());
 
