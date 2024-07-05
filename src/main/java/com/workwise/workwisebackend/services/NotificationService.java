@@ -3,7 +3,9 @@ package com.workwise.workwisebackend.services;
 import com.workwise.workwisebackend.entities.Credential;
 import com.workwise.workwisebackend.entities.JobOffer;
 import com.workwise.workwisebackend.entities.Notification;
+import com.workwise.workwisebackend.entities.actors.Company;
 import com.workwise.workwisebackend.entities.actors.User;
+import com.workwise.workwisebackend.repositories.CompanyRepository;
 import com.workwise.workwisebackend.repositories.CredentialRepository;
 import com.workwise.workwisebackend.repositories.NotificationRepository;
 import com.workwise.workwisebackend.repositories.UserRepository;
@@ -26,6 +28,9 @@ public class NotificationService {
 
     @Autowired
     private CredentialRepository credentialsRepository;
+
+    @Autowired
+    private CompanyRepository companyRepository;
 
     public void notifyAllCandidatesNewJobOffer(JobOffer jobOffer) {
         List<User> candidates = userRepository.findAll();
@@ -56,68 +61,111 @@ public class NotificationService {
         Credential credentials = credentialsRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        User user = userRepository.findByCredentials(credentials.getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
         Notification notification = notificationRepository.findById(notificationId)
-        .orElseThrow(() -> new IllegalArgumentException("Job Offer not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Job Offer not found"));
 
-        if (!notification.getRecipientId().equals(user.getId())) {
-            throw new RuntimeException("Notification does not belong to user");
+        Optional<User> optionalUser = userRepository.findByCredentials(credentials.getId());
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            notification.setIsRead(true);
+            return notificationRepository.save(notification);
+
         }
-        notification.setIsRead(true);
+        Optional<Company> optionalCompany = companyRepository.findByCredentials(credentials.getId());
 
-        return notificationRepository.save(notification);
+        if (optionalCompany.isPresent()) {
+            Company company = optionalCompany.get();
+            notification.setIsRead(true);
+
+            return notificationRepository.save(notification);
+        }
+
+        throw new RuntimeException("No user or company found for the provided credentials");
     }
 
     public Notification markAsUnread(Long notificationId, String email) {
         Credential credentials = credentialsRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        User user = userRepository.findByCredentials(credentials.getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new IllegalArgumentException("Job Offer not found"));
 
-        if (!notification.getRecipientId().equals(user.getId())) {
-            throw new RuntimeException("Notification does not belong to user");
-        }
-        notification.setIsRead(false);
+        Optional<User> optionalUser = userRepository.findByCredentials(credentials.getId());
 
-        return notificationRepository.save(notification);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            notification.setIsRead(false);
+            return notificationRepository.save(notification);
+
+        }
+        Optional<Company> optionalCompany = companyRepository.findByCredentials(credentials.getId());
+
+        if (optionalCompany.isPresent()) {
+            Company company = optionalCompany.get();
+            notification.setIsRead(false);
+
+            return notificationRepository.save(notification);
+        }
+
+        throw new RuntimeException("No user or company found for the provided credentials");
     }
 
     public Optional<Notification> deleteNotification(Long notificationId, String email) {
         Credential credentials = credentialsRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        User user = userRepository.findByCredentials(credentials.getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Job Offer not found"));
 
-        if (!notification.getRecipientId().equals(user.getId())) {
-            throw new RuntimeException("Notification does not belong to user");
+        Optional<User> optionalUser = userRepository.findByCredentials(credentials.getId());
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            notification.setIsRead(false);
+            notificationRepository.deleteById(notification.getId());
+
+            return Optional.of(notification);
         }
+        Optional<Company> optionalCompany = companyRepository.findByCredentials(credentials.getId());
 
-        notificationRepository.deleteById(notification.getId());
+        if (optionalCompany.isPresent()) {
+            Company company = optionalCompany.get();
+            notification.setIsRead(false);
 
-        return Optional.of(notification);
+            notificationRepository.deleteById(notification.getId());
+
+            return Optional.of(notification);        }
+
+        throw new RuntimeException("No user or company found for the provided credentials");
     }
 
     public List<Notification> deleteAllNotifications(String email) {
+
         Credential credentials = credentialsRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        User user = userRepository.findByCredentials(credentials.getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Notification> notifications = notificationRepository.findAllByRecipientId(user.getId());
+        Optional<User> optionalUser = userRepository.findByCredentials(credentials.getId());
 
-        notificationRepository.deleteAll(notifications);
+        if (optionalUser.isPresent()) {
+            List<Notification> notifications = notificationRepository.findAllByRecipientId(optionalUser.get().getId());
 
-        return notifications;
+            notificationRepository.deleteAll(notifications);
+            return notifications;
+        }
+        Optional<Company> optionalCompany = companyRepository.findByCredentials(credentials.getId());
+
+        if (optionalCompany.isPresent()) {
+            List<Notification> notifications = notificationRepository.findAllByRecipientId(optionalCompany.get().getId());
+
+            notificationRepository.deleteAll(notifications);
+            return notifications;
+        }
+
+        throw new RuntimeException("No user or company found for the provided credentials");
     }
 }
