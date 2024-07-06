@@ -134,7 +134,6 @@ public class AuthService {
 
     public ReqRes login(LoginDto loginDto) throws Exception {
 
-        System.out.println("mail:" + loginDto.getEmail());
         ReqRes response = new ReqRes();
         response.setStatus(200);
         response.setExpirationTime("24Hr");

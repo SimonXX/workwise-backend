@@ -46,7 +46,6 @@ public class JWTUtils {
     }
 
     public String extractUsername(String token){
-        System.out.println("extract username");
 
         return extractClaims(token, Claims::getSubject);
     }
